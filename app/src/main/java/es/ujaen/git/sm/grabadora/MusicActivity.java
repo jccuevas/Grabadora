@@ -27,7 +27,11 @@ public class MusicActivity extends AppCompatActivity {
 
     private MediaPlayer mMPlayer = null;
     private View mMainView = null;
-    private int audioSessionId=0;
+    private int audioSessionIdRaw = 0;
+    private int audioSessionIdExternal = 0;
+    final File music = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+
+    String mExternalPath = music.getPath() + "/" + "invierno.mp3";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +111,7 @@ public class MusicActivity extends AppCompatActivity {
                 // result of the request.
             }
         } else {
-            playMusicExternal();
+            playMusicExternal(mExternalPath);
         }
 
     }
@@ -151,13 +155,11 @@ public class MusicActivity extends AppCompatActivity {
             }
     }
 
-    protected void playMusicExternal() {
-        File music = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-        String path = music.getPath() + "/" + "invierno.mp3";
+    protected void playMusicExternal(String path) {
+
+
 
         if (mMPlayer != null) {
-
-
             if (mMPlayer.isPlaying()) {
                 mMPlayer.pause();
                 mPlayExternal.setImageDrawable(ContextCompat.getDrawable(MusicActivity.this, android.R.drawable.ic_media_play));
@@ -169,21 +171,32 @@ public class MusicActivity extends AppCompatActivity {
 
         } else {
             try {
-                mMPlayer = new MediaPlayer();
-                mMPlayer.setDataSource(path);
-                mMPlayer.prepare();
-                mMPlayer.start();
-                mPlayExternal.setImageDrawable(ContextCompat.getDrawable(MusicActivity.this, android.R.drawable.ic_media_pause));
+                iniExternalAudio(path);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    private void iniExternalAudio(String path) throws IOException{
+        mMPlayer = new MediaPlayer();
+        mMPlayer.setDataSource(path);
+        mMPlayer.prepare();
+        mMPlayer.start();
+        mPlayExternal.setImageDrawable(ContextCompat.getDrawable(MusicActivity.this, android.R.drawable.ic_media_pause));
+    }
     @Override
     public void onResume() {
         super.onResume();
-        mMPlayer = MediaPlayer.create(MusicActivity.this, R.raw.barry);
+        if (audioSessionIdRaw != 0) {
+            mMPlayer = MediaPlayer.create(MusicActivity.this, R.raw.barry);
+            audioSessionIdRaw = mMPlayer.getAudioSessionId();
+        } else if (audioSessionIdExternal != 0) {
+            mMPlayer = new MediaPlayer();
+            //playMusicExternal();
+        } else {
+            mMPlayer = new MediaPlayer();
+        }
     }
 
     @Override
