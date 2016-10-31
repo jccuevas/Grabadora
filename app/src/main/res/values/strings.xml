@@ -3,6 +3,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="externalstorage_error">No ha memoria externa</string>
+    <string name="no_action">Aún no hay nada aquí</string>
     <string name="permission_readexternal">Se necesitan permisos para leer del almacenamiento externo para acceder a la música</string>
     <string name="permission_readexternal_denied">No se reproducirá música</string>
     <string name="music_label_resource">Recurso raw mp3</string>

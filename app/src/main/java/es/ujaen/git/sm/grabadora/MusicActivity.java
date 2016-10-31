@@ -71,7 +71,7 @@ public class MusicActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(mMainView, R.string.externalstorage_error,
+                Snackbar.make(mMainView, R.string.no_action,
                         Snackbar.LENGTH_LONG).show();
             }
         });
@@ -158,6 +158,17 @@ public class MusicActivity extends AppCompatActivity {
     protected void playMusicExternal(String path) {
 
 
+        if (mMPlayer != null && audioSessionIdRaw!=0) {
+            mMPlayer.stop();
+            try {
+                iniExternalAudio(mExternalPath);
+                audioSessionIdRaw=0;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+        }
 
         if (mMPlayer != null) {
             if (mMPlayer.isPlaying()) {
@@ -192,10 +203,15 @@ public class MusicActivity extends AppCompatActivity {
             mMPlayer = MediaPlayer.create(MusicActivity.this, R.raw.barry);
             audioSessionIdRaw = mMPlayer.getAudioSessionId();
         } else if (audioSessionIdExternal != 0) {
-            mMPlayer = new MediaPlayer();
+            try {
+                iniExternalAudio(mExternalPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             //playMusicExternal();
         } else {
-            mMPlayer = new MediaPlayer();
+            mMPlayer = MediaPlayer.create(MusicActivity.this, R.raw.barry);
+            audioSessionIdRaw=mMPlayer.getAudioSessionId();
         }
     }
 
